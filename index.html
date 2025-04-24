@@ -1,0 +1,71 @@
+{% extends 'app/base.html' %} 
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4"><b>IoPPN Contributions to Psychometrics Database</b></h2>
+    
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="input-group">
+                <input type="text" 
+                    id="authorSearch" 
+                    class="form-control" 
+                    placeholder="Search by author, acronym, keyword, journal..."
+                    autocomplete="off">
+                <button class="btn btn-outline-secondary" type="button" id="searchButton">
+                    <span class="spinner-border spinner-border-sm d-none" id="loadingSpinner"></span>
+                    <i class="bi bi-search"></i>
+                </button>
+            </div>
+            <div class="invalid-feedback">Please enter a search term</div>
+        </div>
+        <div class="col-md-6 text-end">
+            <button class="btn btn-info" id="downloadList">
+                <i class="bi bi-download"></i> Download List
+            </button>
+            <button class="btn btn-success" id="downloadFull">
+                <i class="bi bi-download"></i> Download Full
+            </button>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Acronym</th>
+                    <th>Name</th>
+                    <th>Authors</th>
+                    <th>Journal</th>
+                    <th>Keywords</th>
+                    <th>Type</th>
+                    <th>Completed By</th>
+                </tr>
+            </thead>
+            <tbody id="measuresTable">
+                {% for measure in measures %}
+                <tr data-id="{{ measure.id }}">
+                    <td>{{ measure.acronym }}</td>
+                    <td><a href="#">{{ measure.name }}</a></td>
+                    <td>{{ measure.author_list }}</td>
+                    <td>{{ measure.journal }}</td>
+                    <td>{{ measure.keywords }}</td>
+                    <td>{{ measure.get_measure_type_display }}</td>
+                    <td>{{ measure.get_who_completes_display }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center text-muted">
+                        Please search for a measure to display results
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script src="{% static 'js/measures.js' %}"></script>
+{% endblock %}

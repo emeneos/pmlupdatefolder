@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+    /* ========== BASE STYLES ========== */
+    :root {
+        --primary-blue: #005AD2;
+        --secondary-blue: #00B9E1;
+        --neutral-grey: #6c757d;
+        --light-grey: #CDD7DC;
+    }
+
+    /* ========== LAYOUT STRUCTURE ========== */
+    .publications-container {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem;
+    }
+
+    /* ========== TYPOGRAPHY & HEADINGS ========== */
+    .section-heading {
+        color: var(--primary-blue);
+        font-size: 2.2rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        position: relative;
+        padding-bottom: 0.5rem;
+    }
+
+    .section-heading::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 120px;
+        height: 3px;
+        background: var(--secondary-blue);
+    }
+
+    .acronym-title {
+        color: var(--primary-blue);
+        font-size: 1.6rem;
+        font-weight: 600;
+        margin-bottom: 0.8rem;
+        letter-spacing: -0.3px;
+    }
+
+    /* ========== PUBLICATION CARDS ========== */
+    .publication-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.8rem;
+        margin-bottom: 1.8rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        transition: transform 0.2s ease;
+    }
+
+    .publication-card:hover {
+        transform: translateY(-3px);
+    }
+
+    .publication-card.alternate-bg {
+        background-color: #f8f9fa;
+    }
+
+    .reference-text {
+        color: var(--neutral-grey);
+        font-size: 1rem;
+        line-height: 1.7;
+        margin-bottom: 1.2rem;
+    }
+
+    /* ========== DOI LINK STYLES ========== */
+    .doi-link {
+        color: var(--secondary-blue) !important;
+        font-weight: 500;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: opacity 0.3s ease;
+    }
+
+    .doi-link:hover {
+        opacity: 0.8;
+        text-decoration: underline;
+    }
+
+    .doi-link::before {
+        content: '🔗';
+        font-size: 0.9em;
+    }
+
+    /* ========== PDF SPECIFIC STYLES ========== */
+    @page {
+        size: A4;
+        margin: 1.5cm;
+        @frame footer {
+            -pdf-frame-content: footerContent;
+            bottom: 1cm;
+            height: 1cm;
+        }
+    }
+
+    .pdf-footer {
+        color: var(--neutral-grey) !important;
+        font-size: 0.85rem;
+        padding-top: 2rem;
+    }
+
+    /* ========== UTILITY CLASSES ========== */
+    .text-center { text-align: center !important; }
+    .d-none { display: none !important; }
+    .mb-4 { margin-bottom: 1.5rem !important; }
+</style>
+
+<div class="publications-container">
+    <!-- Header Section -->
+    <header class="text-center mb-5">
+        <h1 class="section-heading">List of Publications</h1>
+    </header>
+
+    <!-- Publications List -->
+    <main class="publications-list">
+        {% for measure in measures %}
+        <article class="publication-card {% if forloop.counter|divisibleby:2 %}alternate-bg{% endif %}">
+            <h2 class="acronym-title">{{ measure.acronym }}</h2>
+            
+            <div class="publication-content">
+                <p class="reference-text">{{ measure.references }}</p>
+                
+                <div class="doi-container">
+                    <a href="{{ measure.doi }}" 
+                       class="doi-link" 
+                       target="_blank"
+                       rel="noopener noreferrer">
+                        {{ measure.doi }}
+                    </a>
+                </div>
+            </div>
+        </article>
+        {% endfor %}
+    </main>
+
+    <!-- PDF Footer -->
+    <div id="footerContent" class="pdf-footer text-center d-none">
+        <p class="text-muted mb-0">
+            King's College London Psychometrics Database<br>
+            Generated on {% now "SHORT_DATETIME_FORMAT" %}
+        </p>
+    </div>
+</div>
+{% endblock %}

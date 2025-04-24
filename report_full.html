@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+    /* Base Styles */
+    .measure-container {
+        background: white;
+        border-radius: 10px;
+        margin-bottom: 2.5rem;
+        padding: 2rem;
+    }
+
+    .measure-header {
+        border-bottom: 2px solid #005AD2;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+    }
+
+    .measure-acronym {
+        color: #005AD2;
+        font-size: 2.2rem;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+    }
+
+    .measure-name {
+        color: #2c3e50;
+        font-size: 1.8rem;
+        font-weight: 500;
+        margin: 0.5rem 0;
+    }
+
+    .section-title {
+        color: #005AD2;
+        font-size: 1.4rem;
+        font-weight: 600;
+        margin: 1.5rem 0 1rem;
+        padding-left: 0.5rem;
+        border-left: 4px solid #00B9E1;
+    }
+
+    .detail-card {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .detail-item {
+        margin-bottom: 1rem;
+    }
+
+    .detail-label {
+        color: #495057;
+        font-weight: 500;
+        margin-bottom: 0.3rem;
+    }
+
+    .detail-content {
+        color: #6c757d;
+        line-height: 1.6;
+    }
+
+    .doi-link {
+        color: #00B9E1 !important;
+        font-weight: 500;
+        text-decoration: none;
+    }
+
+    /* PDF Specific */
+    @page {
+        size: A4;
+        margin: 2cm;
+        @frame footer {
+            -pdf-frame-content: footerContent;
+            bottom: 1cm;
+            height: 1cm;
+        }
+    }
+
+    .pdf-footer {
+        color: #6c757d !important;
+        font-size: 0.9rem;
+    }
+</style>
+
+<div class="container">
+    <header class="text-center mb-5">
+        <h1 class="section-heading">List of Publications</h1>
+    </header>
+
+    {% for measure in measures %}
+    <article class="measure-container">
+        <!-- Header Section -->
+        <header class="measure-header">
+            <div class="d-flex justify-content-between align-items-end">
+                <div>
+                    <div class="measure-acronym">{{ measure.acronym }}</div>
+                    <h1 class="measure-name">{{ measure.name }}</h1>
+                </div>
+                <div class="text-muted">{{ measure.get_measure_type_display }}</div>
+            </div>
+        </header>
+
+        <!-- References & DOI -->
+        <section>
+            <h3 class="section-title">Reference Information</h3>
+            <div class="detail-card">
+                <p class="detail-content">{{ measure.references }}</p>
+                <a href="{{ measure.doi }}" class="doi-link" target="_blank" rel="noopener noreferrer">
+                    {{ measure.doi }}
+                </a>
+            </div>
+        </section>
+
+        <!-- Abstract -->
+        <section>
+            <h3 class="section-title">Abstract</h3>
+            <div class="detail-card">
+                <p class="detail-content">{{ measure.abstract }}</p>
+            </div>
+        </section>
+
+        <!-- Key Details -->
+        <div class="row">
+            <!-- Left Column -->
+            <div class="col-lg-4">
+                <section>
+                    <h3 class="section-title">Key Specifications</h3>
+                    <div class="detail-card">
+                        <div class="detail-item">
+                            <div class="detail-label">Items</div>
+                            <div class="detail-content">{{ measure.number_of_items }}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Item Type</div>
+                            <div class="detail-content">{{ measure.type_of_items }}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Dimensionality</div>
+                            <div class="detail-content">{{ measure.get_dimensionality_display }}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Age Group</div>
+                            <div class="detail-content">{{ measure.age_group }}</div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Right Column -->
+            <div class="col-lg-8">
+                <section>
+                    <h3 class="section-title">Detailed Information</h3>
+                    <div class="detail-card">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="detail-item">
+                                    <div class="detail-label">Measurement Focus</div>
+                                    <div class="detail-content">{{ measure.what_it_measures }}</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-label">Completion Method</div>
+                                    <div class="detail-content">{{ measure.get_who_completes_display }}</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="detail-item">
+                                    <div class="detail-label">Copyright</div>
+                                    <div class="detail-content">{{ measure.copyright }}</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-label">Availability</div>
+                                    <div class="detail-content">
+                                        {% if measure.available_online %}
+                                        <a href="{{ measure.where }}" class="text-decoration-none">
+                                            {{ measure.where }}
+                                        </a>
+                                        {% else %}
+                                        {{ measure.where }}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </article>
+    {% endfor %}
+
+    <!-- PDF Footer -->
+    <div id="footerContent" class="pdf-footer text-center d-none">
+        <p>
+            King's College London Psychometrics Database<br>
+            Generated on {% now "F j, Y \a\t H:i" %}
+        </p>
+    </div>
+</div>
+{% endblock %}
